@@ -6,7 +6,33 @@ from django.db import connection
 
 from mezzanine.core.admin import DisplayableAdmin
 from drum.links.models import Link
+from django.contrib.comments import *
+from django_select2 import *
+from django import forms
 
+
+class CommentsWidget(AutoHeavySelect2MultipleWidget):
+    def render(self, name, value, attrs=None, choices=()):
+        params = attrs
+        params['control'] = super(CommentsWidget, self).render(name, value, attrs, choices)
+        html = render_to_string("widget_many_to_many.html", attrs)
+        print 'COMMENT'
+        return mark_safe(html)
+
+
+class CommentsChoices(AutoModelSelect2MultipleField):
+    queryset = Comment.objects
+    search_fields = ['comment__icontains', ]
+
+    widget = CommentsWidget
+
+
+class LinkForm(forms.ModelForm):
+    comments = CommentsChoices
+
+    class Meta:
+        model = Comment
+        fields = ('comment',)
 
 class LinkAdmin(DisplayableAdmin):
 
@@ -54,4 +80,3 @@ admin.site.register(Link, LinkAdmin)
 if getattr(settings, "AUTO_TAG", False):
     from mezzanine.generic.models import Keyword
     admin.site.register(Keyword, KeywordAdmin)
-
