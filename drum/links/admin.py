@@ -1,14 +1,22 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.contrib import admin
-from django.db import connection
+from django.contrib.contenttypes.generic import GenericStackedInline
 
+from django.db import connection
+from copy import deepcopy
 from mezzanine.core.admin import DisplayableAdmin
-from drum.links.models import Link
+from mezzanine.generic.admin import ThreadedCommentAdmin
+from mezzanine.generic.models import ThreadedComment
+
 from django.contrib.comments import *
 from django_select2 import *
 from django import forms
+from django.contrib import admin
+from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
+
+from drum.links.models import Link, WaveSurfComment
 
 
 class CommentsWidget(AutoHeavySelect2MultipleWidget):
@@ -16,7 +24,6 @@ class CommentsWidget(AutoHeavySelect2MultipleWidget):
         params = attrs
         params['control'] = super(CommentsWidget, self).render(name, value, attrs, choices)
         html = render_to_string("widget_many_to_many.html", attrs)
-        print 'COMMENT'
         return mark_safe(html)
 
 
@@ -27,6 +34,10 @@ class CommentsChoices(AutoModelSelect2MultipleField):
     widget = CommentsWidget
 
 
+comment_fieldsets = deepcopy(ThreadedCommentAdmin.fieldsets)
+comment_fieldsets[0][1]["fields"] += ("end", "start",)
+
+
 class LinkForm(forms.ModelForm):
     comments = CommentsChoices
 
@@ -34,8 +45,14 @@ class LinkForm(forms.ModelForm):
         model = Comment
         fields = ('comment',)
 
-class LinkAdmin(DisplayableAdmin):
 
+class WaveSurfCommentInline(GenericStackedInline):
+    classes = "collapse"
+    model = WaveSurfComment
+    ct_fk_field = 'object_pk'
+
+
+class LinkAdmin(DisplayableAdmin):
     list_display = ("id", "title", "link", "status", "publish_date",
                     "user", "comments_count", "rating_sum")
     list_display_links = ("id",)
@@ -43,12 +60,12 @@ class LinkAdmin(DisplayableAdmin):
     list_filter = ("status", "user__username")
     search_fields = ("title", "link", "user__username", "user__email")
     ordering = ("-publish_date",)
-
     fieldsets = (
         (None, {
-            "fields": ("title", "link", "status", "publish_date", "user"),
+            "fields": ("title", "link", "status", "publish_date", "user", "audio_file"),
         }),
     )
+    inlines = [WaveSurfCommentInline, ]
 
 
 def delete_keywords(modeladmin, request, queryset):
@@ -60,7 +77,6 @@ def delete_keywords(modeladmin, request, queryset):
 
 
 class KeywordAdmin(admin.ModelAdmin):
-
     ordering = ["title"]
     list_display = ["id", "title", "slug"]
     list_editable = ["title", "slug"]
@@ -79,4 +95,7 @@ admin.site.register(Link, LinkAdmin)
 
 if getattr(settings, "AUTO_TAG", False):
     from mezzanine.generic.models import Keyword
+
     admin.site.register(Keyword, KeywordAdmin)
+
+admin.site.unregister(ThreadedComment)

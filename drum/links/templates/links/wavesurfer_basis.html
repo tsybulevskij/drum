@@ -1,0 +1,52 @@
+<script src="{{ STATIC_URL }}js/wavesurfer.js"></script>
+
+
+<script src="{{ STATIC_URL }}js/wavesurfer.timeline.js"></script>
+<script src="{{ STATIC_URL }}js/wavesurfer.regions.js"></script>
+<script src="{{ STATIC_URL }}js/wavesurfer.minimap.js"></script>
+<script src="{{ STATIC_URL }}js/trivia.js"></script>
+<div id="demo">
+    <p id="subtitle" class="text-center text-info">&nbsp;</p>
+
+    <div id="wave-timeline"></div>
+
+    <div id="waveform">
+
+    </div>
+
+</div>
+
+<div id="demo">
+    <div id="waveform">
+        <div class="progress progress-striped active" id="progress-bar">
+            <div class="progress-bar progress-bar-info"></div>
+        </div>
+
+        <!-- Here be the waveform -->
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-primary" data-action="back">
+            <i class="glyphicon glyphicon-step-backward"></i>
+            Backward
+        </button>
+
+        <button class="btn btn-primary" data-action="play">
+            <i class="glyphicon glyphicon-play"></i>
+            Play
+            /
+            <i class="glyphicon glyphicon-pause"></i>
+            Pause
+        </button>
+
+        <button class="btn btn-primary" data-action="forth">
+            <i class="glyphicon glyphicon-step-forward"></i>
+            Forward
+        </button>
+
+        <button class="btn btn-primary" data-action="toggle-mute">
+            <i class="glyphicon glyphicon-volume-off"></i>
+            Toggle Mute
+        </button>
+    </div>
+</div>

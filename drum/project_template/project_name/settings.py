@@ -22,7 +22,19 @@ ADMIN_MENU_ORDER = (
     ("Site", ("sites.Site", "redirects.Redirect", "conf.Setting")),
     ("Users", ("auth.User", "auth.Group",)),
 )
-
+EXTRA_MODEL_FIELDS = (
+    # Four-item sequence for one field injected.
+    (
+        # Dotted path to field.
+        "mezzanine.generic.models.ThreadedComment.end",
+        # Dotted path to field class.
+        "django.db.models.FloatField",
+        # Positional args for field class.
+        ("End",),
+        # Keyword args for field class.
+        {"blank": True, "null": True},
+    ),
+)
 # A three item sequence, each containing a sequence of template tags
 # used to render the admin dashboard.
 #
@@ -163,6 +175,7 @@ DATABASES = {
 PROJECT_APP_PATH = os.path.dirname(os.path.abspath(__file__))
 PROJECT_APP = os.path.basename(PROJECT_APP_PATH)
 PROJECT_ROOT = BASE_DIR = os.path.dirname(PROJECT_APP_PATH)
+PROJECT_DIRNAME = PROJECT_ROOT.split(os.sep)[-1]
 
 # Every cache key will get prefixed with this value - here we set it to
 # the name of the directory the project is in to try and use something
@@ -203,6 +216,7 @@ TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
 ################
 
 INSTALLED_APPS = (
+
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -307,6 +321,8 @@ ITEMS_PER_PAGE = 20
 LINK_REQUIRED = False
 AUTO_TAG = True
 
+SECRET_KEY = "pkh4d!@peo4z!0ntn$io*!n2tcagaeaawfzymbt=-0$t%#0me5"
+NEVERCACHE_KEY = "pkh4d!@peo4z!0ntn$io*!n2tcagaeaawfzymbt=-0$t%#0me5"
 
 ##################
 # LOCAL SETTINGS #

@@ -18,24 +18,27 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from django.db import models
 
 from mezzanine.accounts import get_profile_model
 from mezzanine.core.models import Displayable, Ownable
 from mezzanine.core.request import current_request
-from mezzanine.generic.models import Rating, Keyword, AssignedKeyword
+from mezzanine.generic.models import Rating, Keyword, AssignedKeyword, ThreadedComment
 from mezzanine.generic.fields import RatingField, CommentsField
 from mezzanine.utils.urls import slugify
-
+from filebrowser.fields import FileBrowseField
+from django.contrib.comments import Comment
 
 USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 
 class Link(Displayable, Ownable):
-
     link = models.URLField(null=True,
-        blank=(not getattr(settings, "LINK_REQUIRED", False)))
+                           blank=(not getattr(settings, "LINK_REQUIRED", False)))
     rating = RatingField()
     comments = CommentsField()
+    audio_file = FileBrowseField("Audio", max_length=200, extensions=[".mp3", ".mp4", ".wav", ".aiff", ".midi", ".m4p"],
+                                 blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse("link_detail", kwargs={"slug": self.slug})
@@ -54,8 +57,8 @@ class Link(Displayable, Ownable):
         keywords = []
         if not self.keywords_string and getattr(settings, "AUTO_TAG", False):
             variations = lambda word: [word,
-                sub("^([^A-Za-z0-9])*|([^A-Za-z0-9]|s)*$", "", word),
-                sub("^([^A-Za-z0-9])*|([^A-Za-z0-9])*$", "", word)]
+                                       sub("^([^A-Za-z0-9])*|([^A-Za-z0-9]|s)*$", "", word),
+                                       sub("^([^A-Za-z0-9])*|([^A-Za-z0-9])*$", "", word)]
             keywords = sum(map(variations, split("\s|/", self.title)), [])
         super(Link, self).save(*args, **kwargs)
         if keywords:
@@ -65,7 +68,6 @@ class Link(Displayable, Ownable):
 
 
 class Profile(models.Model):
-
     user = models.OneToOneField(USER_MODEL)
     website = models.URLField(blank=True)
     bio = models.TextField(blank=True)
@@ -90,10 +92,16 @@ def karma(sender, **kwargs):
     rating = kwargs["instance"]
     value = int(rating.value)
     if "created" not in kwargs:
-        value *= -1 #  Rating deleted
+        value *= -1  # Rating deleted
     elif not kwargs["created"]:
-        value *= 2 #  Rating changed
+        value *= 2  # Rating changed
     content_object = rating.content_object
     if rating.user != content_object.user:
         queryset = get_profile_model().objects.filter(user=content_object.user)
         queryset.update(karma=models.F("karma") + value)
+
+
+class WaveSurfComment(Comment):
+    start = models.FloatField()
+    end = models.FloatField()
+    objects = Comment.objects

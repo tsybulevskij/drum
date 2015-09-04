@@ -77,7 +77,7 @@ class ScoreOrderingView(UserFilterView):
         else:
             qs = qs.order_by("-" + self.date_field)
         context["object_list"] = paginate(qs, self.request.GET.get("page", 1),
-            settings.ITEMS_PER_PAGE, settings.MAX_PAGING_LINKS)
+                                          settings.ITEMS_PER_PAGE, settings.MAX_PAGING_LINKS)
         # Update context_object_name variable
         context_object_name = self.get_context_object_name(context["object_list"])
         context[context_object_name] = context["object_list"]
@@ -90,6 +90,7 @@ class LinkView(object):
     List and detail view mixin for links - just defines the correct
     queryset.
     """
+
     def get_queryset(self):
         return Link.objects.published().select_related(
             "user",

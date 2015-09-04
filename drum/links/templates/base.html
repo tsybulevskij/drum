@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/flat-ui.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/drum.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap2-responsive.css">
+{#<link rel="stylesheet" href="{{ STATIC_URL }}css/smoothness/jquery-ui-1.9.1.custom.min.css">#}
 {% endcompress %}
 
 {% compress js %}
@@ -28,6 +29,9 @@
 <script src="{{ STATIC_URL }}js/bootstrap2-extras.js"></script>
 <script src="{{ STATIC_URL }}js/drum.js"></script>
 <script src="{{ STATIC_URL }}js/jquery.pjax.js"></script>
+
+
+
 {% endcompress %}
 
 {% block extra_head %}{% endblock %}
@@ -100,6 +104,7 @@
     </p>
 </div>
 </footer>
+
 
 {% include "includes/footer_scripts.html" %}
 
