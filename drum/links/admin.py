@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.contrib.contenttypes.generic import GenericStackedInline
+from django.contrib.sites.models import Site
 
 from django.db import connection
 from copy import deepcopy
@@ -50,11 +51,12 @@ class WaveSurfCommentInline(GenericStackedInline):
     classes = "collapse"
     model = WaveSurfComment
     ct_fk_field = 'object_pk'
+    fields = ("site", "user", "comment", "submit_date", "is_public", "is_removed", "start", "end", )
 
 
 class LinkAdmin(DisplayableAdmin):
     list_display = ("id", "title", "link", "status", "publish_date",
-                    "user", "comments_count", "rating_sum")
+                    "user", "comments_number", "rating_sum")
     list_display_links = ("id",)
     list_editable = ("title", "link", "status")
     list_filter = ("status", "user__username")

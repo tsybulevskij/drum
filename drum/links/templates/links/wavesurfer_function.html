@@ -31,7 +31,7 @@
 
         /* Regions */
         wavesurfer.enableDragSelection({
-            color: randomColor(0.1)
+            color: randomColor(0.2)
         });
 
         wavesurfer.on('ready', function () {
@@ -127,10 +127,11 @@
 
         {% for comment in comments_for_thread %}
             var data = {
-                start:{{ comment.start }},
-                end:{{ comment.end }},
-                data: {note: '{{ comment.comment }}', color: randomColor(0.3)}
+                start:'{{ comment.start }}',
+                end: '{{ comment.end }}',
+                data: {note: '{{ comment.comment }}'}
             };
+            data.color = randomColor(0.2);
             wavesurfer.addRegion(data);
             console.log(data);
 

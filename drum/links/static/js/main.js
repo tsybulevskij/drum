@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /* Regions */
-    wavesurfer.enableDragSelection({
-        color: randomColor(0.1)
-    });
+    //wavesurfer.enableDragSelection({
+    //    color: randomColor(0.1)
+    //});
 
     wavesurfer.on('ready', function () {
         if (localStorage.regions) {

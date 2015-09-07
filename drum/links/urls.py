@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 
-from drum.links.views import LinkList, LinkCreate, LinkDetail, CommentList, TagList
+from drum.links.views import LinkList, LinkCreate, LinkDetail, TagList, WaveSurfCommentList
 
 
 urlpatterns = patterns("",
@@ -14,10 +14,10 @@ urlpatterns = patterns("",
         LinkList.as_view(), {"by_score": False},
         name="link_list_latest"),
     url("^comments/$",
-        CommentList.as_view(), {"by_score": False},
+        WaveSurfCommentList.as_view(), {"by_score": False},
         name="comment_list_latest"),
     url("^best/$",
-        CommentList.as_view(),
+        WaveSurfCommentList.as_view(),
         name="comment_list_best"),
     url("^link/create/$",
         login_required(LinkCreate.as_view()),
@@ -29,7 +29,7 @@ urlpatterns = patterns("",
         LinkList.as_view(), {"by_score": False},
         name="link_list_user"),
     url("^users/(?P<username>.*)/comments/$",
-        CommentList.as_view(), {"by_score": False},
+        WaveSurfCommentList.as_view(), {"by_score": False},
         name="comment_list_user"),
     url("^tags/$",
         TagList.as_view(),

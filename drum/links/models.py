@@ -1,9 +1,9 @@
 from __future__ import unicode_literals
+from django.contrib.sites.models import Site
 from future import standard_library
 from future.builtins import int
 
 from re import sub, split
-from time import time
 from operator import ior
 from functools import reduce
 
@@ -28,8 +28,18 @@ from mezzanine.generic.fields import RatingField, CommentsField
 from mezzanine.utils.urls import slugify
 from filebrowser.fields import FileBrowseField
 from django.contrib.comments import Comment
+from django.contrib.contenttypes import generic
+from django.utils import timezone
+
 
 USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
+
+
+class WaveSurfComment(Comment):
+    start = models.FloatField(default=0)
+    end = models.FloatField(default=0)
+    objects = Comment.objects
+    rating = RatingField(verbose_name="Rating")
 
 
 class Link(Displayable, Ownable):
@@ -39,6 +49,13 @@ class Link(Displayable, Ownable):
     comments = CommentsField()
     audio_file = FileBrowseField("Audio", max_length=200, extensions=[".mp3", ".mp4", ".wav", ".aiff", ".midi", ".m4p"],
                                  blank=True, null=True)
+
+    def get_comments_number(self):
+        comments = WaveSurfComment.objects.filter(object_pk=self.pk)
+        return len(comments)
+    get_comments_number.short_description = "Comments"
+
+    comments_number = property(get_comments_number)
 
     def get_absolute_url(self):
         return reverse("link_detail", kwargs={"slug": self.slug})
@@ -101,7 +118,5 @@ def karma(sender, **kwargs):
         queryset.update(karma=models.F("karma") + value)
 
 
-class WaveSurfComment(Comment):
-    start = models.FloatField()
-    end = models.FloatField()
-    objects = Comment.objects
+
+

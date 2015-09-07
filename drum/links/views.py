@@ -16,7 +16,7 @@ from mezzanine.generic.models import ThreadedComment, Keyword
 from mezzanine.utils.views import paginate
 
 from drum.links.forms import LinkForm
-from drum.links.models import Link
+from drum.links.models import Link, WaveSurfComment
 from drum.links.utils import order_by_score
 
 
@@ -183,6 +183,29 @@ class CommentList(ScoreOrderingView):
 
     def get_queryset(self):
         qs = ThreadedComment.objects.filter(is_removed=False, is_public=True)
+        select = ["user", "user__%s" % (USER_PROFILE_RELATED_NAME)]
+        prefetch = ["content_object"]
+        return qs.select_related(*select).prefetch_related(*prefetch)
+
+    def get_title(self, context):
+        if context["profile_user"]:
+            return "Comments by %s" % getattr(
+                context["profile_user"],
+                USER_PROFILE_RELATED_NAME
+            )
+        elif context["by_score"]:
+            return "Best comments"
+        else:
+            return "Latest comments"
+
+
+class WaveSurfCommentList(ScoreOrderingView):
+
+    date_field = "submit_date"
+    score_fields = ["rating_sum"]
+
+    def get_queryset(self):
+        qs = WaveSurfComment.objects.filter(is_removed=False, is_public=True)
         select = ["user", "user__%s" % (USER_PROFILE_RELATED_NAME)]
         prefetch = ["content_object"]
         return qs.select_related(*select).prefetch_related(*prefetch)
