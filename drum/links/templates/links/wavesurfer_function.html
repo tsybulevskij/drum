@@ -1,8 +1,11 @@
 <script type="text/javascript">
+    var wavesurfer = Object.create(WaveSurfer);
+
+
     /**
      * Create a WaveSurfer instance.
      */
-    var wavesurfer = Object.create(WaveSurfer);
+
 
     /**
      * Init & load.
@@ -45,13 +48,15 @@
                 //         wavesurfer.getDuration()
                 //     )
                 // );
-                wavesurfer.util.ajax({
-                    responseType: 'json',
-                    url: 'annotations.json'
-                }).on('success', function (data) {
-                    loadRegions(data);
-                    saveRegions();
-                });
+{#                                wavesurfer.util.ajax({#}
+{#                                    responseType: 'json',#}
+{#                                    url: 'annotations.json'#}
+{#                                }).on('success', function (data) {#}
+{#                                    loadRegions(data);#}
+{#                                    saveRegions();#}
+{#                                });#}
+                loadRegions();
+                saveRegions();
             }
         });
         wavesurfer.on('region-click', function (region, e) {
@@ -92,17 +97,17 @@
         });
 
 
-        /* Toggle play/pause buttons. */
-        var playButton = document.querySelector('#play');
-        var pauseButton = document.querySelector('#pause');
-        wavesurfer.on('play', function () {
-            playButton.style.display = 'none';
-            pauseButton.style.display = '';
-        });
-        wavesurfer.on('pause', function () {
-            playButton.style.display = '';
-            pauseButton.style.display = 'none';
-        });
+{#        /* Toggle play/pause buttons. */#}
+{#        var playButton = document.querySelector('#play');#}
+{#        var pauseButton = document.querySelector('#pause');#}
+{#        wavesurfer.on('play', function () {#}
+{#            playButton.style.display = 'none';#}
+{#            pauseButton.style.display = '';#}
+{#        });#}
+{#        wavesurfer.on('pause', function () {#}
+{#            playButton.style.display = '';#}
+{#            pauseButton.style.display = 'none';#}
+{#        });#}
     });
 
 
@@ -127,17 +132,14 @@
 
         {% for comment in comments_for_thread %}
             var data = {
-                start:'{{ comment.start }}',
+                start: '{{ comment.start }}',
                 end: '{{ comment.end }}',
                 data: {note: '{{ comment.comment }}'}
             };
             data.color = randomColor(0.2);
             wavesurfer.addRegion(data);
-            console.log(data);
 
         {% endfor %}
-
-
 
     }
 
@@ -229,7 +231,7 @@
      */
     function editAnnotation(region) {
         var form = document.forms.edit;
-        form.style.opacity = 1;
+{#        form.style.opacity = 1;#}
         form.elements.start.value = Math.round(region.start * 10) / 10,
                 form.elements.end.value = Math.round(region.end * 10) / 10;
         form.elements.note.value = region.data.note || '';
@@ -242,10 +244,10 @@
                     note: form.elements.note.value
                 }
             });
-            form.style.opacity = 0;
+{#            form.style.opacity = 0;#}
         };
         form.onreset = function () {
-            form.style.opacity = 0;
+{#            form.style.opacity = 0;#}
             form.dataset.region = null;
         };
         form.dataset.region = region.id;
@@ -260,8 +262,8 @@
             showNote.el = document.querySelector('#subtitle');
         }
         showNote.el.textContent = region.data.note || '–';
-    }
 
 
+}
 
 </script>

@@ -44,13 +44,13 @@ document.addEventListener('DOMContentLoaded', function () {
             //         wavesurfer.getDuration()
             //     )
             // );
-            wavesurfer.util.ajax({
-                responseType: 'json',
-                url: 'annotations.json'
-            }).on('success', function (data) {
-                loadRegions(data);
-                saveRegions();
-            });
+            //wavesurfer.util.ajax({
+            //    responseType: 'json',
+            //    url: 'annotations.json'
+            //}).on('success', function (data) {
+            //    loadRegions(data);
+            //    saveRegions();
+            //});
         }
     });
     wavesurfer.on('region-click', function (region, e) {
